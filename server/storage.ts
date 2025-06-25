@@ -63,8 +63,15 @@ export class MemStorage implements IStorage {
 
   async createKey(insertKey: InsertKey): Promise<Key> {
     const id = this.currentKeyId++;
-    const key: Key = { ...insertKey, id, timestamp: new Date() };
+    const key: Key = { 
+      ...insertKey, 
+      id, 
+      timestamp: new Date()
+    };
     this.keys.set(id, key);
+    
+    // Clean up expired keys before saving
+    await this.cleanupExpiredKeys();
     
     // Also save to JSON file
     const allKeys = Array.from(this.keys.values());
@@ -73,7 +80,23 @@ export class MemStorage implements IStorage {
     return key;
   }
 
+  private async cleanupExpiredKeys(): Promise<void> {
+    const now = new Date();
+    const keysToDelete: number[] = [];
+    
+    this.keys.forEach((key, id) => {
+      if (new Date(key.expiresAt) < now) {
+        keysToDelete.push(id);
+      }
+    });
+    
+    keysToDelete.forEach(id => this.keys.delete(id));
+  }
+
   async getAllKeys(): Promise<Key[]> {
+    // Clean up expired keys first
+    await this.cleanupExpiredKeys();
+    
     return Array.from(this.keys.values()).sort((a, b) => 
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
@@ -83,7 +106,18 @@ export class MemStorage implements IStorage {
     try {
       const fileContent = await fs.readFile(this.keysFilePath, 'utf-8');
       const data = JSON.parse(fileContent);
-      return data;
+      
+      // Filter out expired keys from file data
+      const now = new Date();
+      const validKeys = data.keys.filter((key: Key) => new Date(key.expiresAt) > now);
+      
+      return {
+        keys: validKeys,
+        metadata: {
+          total_keys: validKeys.length,
+          last_generated: validKeys.length > 0 ? validKeys[validKeys.length - 1].timestamp : null
+        }
+      };
     } catch (error) {
       return {
         keys: [],

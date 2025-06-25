@@ -15,6 +15,7 @@ export const keys = pgTable("keys", {
   type: text("type").notNull(),
   length: integer("length").notNull(),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -25,6 +26,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export const insertKeySchema = createInsertSchema(keys).omit({
   id: true,
   timestamp: true,
+  expiresAt: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

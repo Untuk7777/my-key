@@ -14,35 +14,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let generatedKey: string;
       
+      // Generate random lowercase letters for the suffix (5 characters max to keep total under 10)
+      const generateRandomSuffix = (maxLength: number) => {
+        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        const suffixLength = Math.min(maxLength, 5); // Keep it short
+        return Array.from({ length: suffixLength }, () => 
+          chars.charAt(Math.floor(Math.random() * chars.length))
+        ).join('');
+      };
+      
       switch (type) {
         case 'uuid':
-          generatedKey = randomUUID();
+          generatedKey = 'FREE_' + generateRandomSuffix(5);
           break;
         case 'hex':
-          generatedKey = Array.from({ length }, () => 
-            Math.floor(Math.random() * 16).toString(16)
-          ).join('');
+          generatedKey = 'FREE_' + generateRandomSuffix(5);
           break;
         case 'alphanumeric':
-          const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-          generatedKey = Array.from({ length }, () => 
-            chars.charAt(Math.floor(Math.random() * chars.length))
-          ).join('');
+          generatedKey = 'FREE_' + generateRandomSuffix(5);
           break;
         case 'custom':
-          generatedKey = Array.from({ length }, () => 
-            Math.floor(Math.random() * 16).toString(16)
-          ).join('');
+          // For custom, respect the length but cap at 10 total
+          const customSuffixLength = Math.min(length - 5, 5); // Subtract 5 for "FREE_"
+          generatedKey = 'FREE_' + generateRandomSuffix(customSuffixLength);
           break;
         default:
-          generatedKey = randomUUID();
+          generatedKey = 'FREE_' + generateRandomSuffix(5);
       }
+
+      // Set expiration to 1 day from now
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 1);
 
       const keyData = {
         name,
         key: generatedKey,
         type,
-        length: generatedKey.length
+        length: generatedKey.length,
+        expiresAt
       };
 
       const savedKey = await storage.createKey(keyData);

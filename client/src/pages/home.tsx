@@ -243,6 +243,12 @@ export default function Home() {
                     <span>{new Date(currentKey.timestamp).toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
+                    <span>Expires:</span>
+                    <span className="text-orange-600 font-medium">
+                      {new Date(currentKey.expiresAt).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
                     <span>Type:</span>
                     <span>{currentKey.type.toUpperCase()}</span>
                   </div>
