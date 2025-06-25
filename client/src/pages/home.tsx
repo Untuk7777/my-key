@@ -278,6 +278,39 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Database Stats */}
+            <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <div className="flex items-center space-x-2">
+                  <i className="fas fa-counter text-blue-600"></i>
+                  <span className="text-sm font-medium text-blue-700">Total Keys</span>
+                </div>
+                <p className="text-2xl font-bold text-blue-900 mt-1">
+                  {fileData?.metadata?.total_keys || 0}
+                </p>
+              </div>
+              <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
+                <div className="flex items-center space-x-2">
+                  <i className="fas fa-clock text-emerald-600"></i>
+                  <span className="text-sm font-medium text-emerald-700">Last Generated</span>
+                </div>
+                <p className="text-sm font-medium text-emerald-900 mt-1">
+                  {fileData?.metadata?.last_generated 
+                    ? new Date(fileData.metadata.last_generated).toLocaleString() 
+                    : "Never"}
+                </p>
+              </div>
+              <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                <div className="flex items-center space-x-2">
+                  <i className="fas fa-file-alt text-purple-600"></i>
+                  <span className="text-sm font-medium text-purple-700">File Size</span>
+                </div>
+                <p className="text-sm font-medium text-purple-900 mt-1">
+                  {Math.round(JSON.stringify(fileData || {}).length / 1024 * 100) / 100} KB
+                </p>
+              </div>
+            </div>
+
             {/* JSON Display */}
             <div className="bg-gray-900 rounded-lg p-6 overflow-x-auto">
               <pre className="text-sm text-gray-300 font-mono">
@@ -310,43 +343,8 @@ export default function Home() {
                 )}
               </pre>
             </div>
-
-            {/* Database Stats */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <div className="flex items-center space-x-2">
-                  <i className="fas fa-counter text-blue-600"></i>
-                  <span className="text-sm font-medium text-blue-700">Total Keys</span>
-                </div>
-                <p className="text-2xl font-bold text-blue-900 mt-1">
-                  {fileData?.metadata?.total_keys || 0}
-                </p>
-              </div>
-              <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
-                <div className="flex items-center space-x-2">
-                  <i className="fas fa-clock text-emerald-600"></i>
-                  <span className="text-sm font-medium text-emerald-700">Last Generated</span>
-                </div>
-                <p className="text-sm font-medium text-emerald-900 mt-1">
-                  {fileData?.metadata?.last_generated 
-                    ? new Date(fileData.metadata.last_generated).toLocaleString() 
-                    : "Never"}
-                </p>
-              </div>
-              <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                <div className="flex items-center space-x-2">
-                  <i className="fas fa-file-alt text-purple-600"></i>
-                  <span className="text-sm font-medium text-purple-700">File Size</span>
-                </div>
-                <p className="text-sm font-medium text-purple-900 mt-1">
-                  {Math.round(JSON.stringify(fileData || {}).length / 1024 * 100) / 100} KB
-                </p>
-              </div>
-            </div>
           </CardContent>
         </Card>
-
-
       </main>
     </div>
   );

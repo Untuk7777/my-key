@@ -21,10 +21,32 @@
       "maxUses": 1,
       "id": 2,
       "timestamp": "2025-06-25T09:22:27.678Z"
+    },
+    {
+      "name": "Unnamed Key",
+      "key": "FREE-475d08e63a-c6df79e1",
+      "type": "bash",
+      "length": 24,
+      "expiresAt": "2025-06-26T09:22:57.097Z",
+      "used": 0,
+      "maxUses": 1,
+      "id": 3,
+      "timestamp": "2025-06-25T09:22:57.097Z"
+    },
+    {
+      "name": "Unnamed Key",
+      "key": "FREE-5121e1d312-3c0083c2",
+      "type": "bash",
+      "length": 24,
+      "expiresAt": "2025-06-26T09:23:13.269Z",
+      "used": 0,
+      "maxUses": 1,
+      "id": 4,
+      "timestamp": "2025-06-25T09:23:13.269Z"
     }
   ],
   "metadata": {
-    "total_keys": 2,
-    "last_generated": "2025-06-25T09:22:27.678Z"
+    "total_keys": 4,
+    "last_generated": "2025-06-25T09:23:13.269Z"
   }
 }
