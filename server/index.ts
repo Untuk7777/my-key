@@ -72,9 +72,11 @@ app.use((req, res, next) => {
     if (process.env.NODE_ENV === "production" && process.env.REPLIT_DOMAINS) {
       console.log(`Validation: https://${process.env.REPLIT_DOMAINS}/api/validate/{key}`);
       console.log(`Generation: https://${process.env.REPLIT_DOMAINS}/api/generate`);
+      console.log(`Key Checker: https://${process.env.REPLIT_DOMAINS}/api/keys/check/{key}`);
     } else {
       console.log("Validation: http://localhost:5000/api/validate/{key}");
       console.log("Generation: http://localhost:5000/api/generate");
+      console.log("Key Checker: http://localhost:5000/api/keys/check/{key}");
       if (process.env.NODE_ENV === "development") {
         console.log("\nAfter deployment, check console for live URLs");
       }
