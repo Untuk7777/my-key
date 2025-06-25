@@ -1,35 +1,26 @@
 {
   "keys": [
     {
-      "name": "Bash Style Test",
-      "key": "FREE-f1d3b1ae20-3d587f47",
+      "name": "Lua Test Key",
+      "key": "FREE-943ab75601-099419a6",
       "type": "bash",
       "length": 24,
-      "expiresAt": "2025-06-26T07:01:37.555Z",
+      "expiresAt": "2025-06-26T07:03:30.462Z",
       "id": 1,
-      "timestamp": "2025-06-25T07:01:37.555Z"
+      "timestamp": "2025-06-25T07:03:30.462Z"
     },
     {
-      "name": "API Test Key",
-      "key": "FREE-4606b5287f-915a381e",
+      "name": "Demo Key",
+      "key": "FREE-07f6715a7d-90f4712d",
       "type": "bash",
       "length": 24,
-      "expiresAt": "2025-06-26T07:01:51.166Z",
+      "expiresAt": "2025-06-26T07:03:32.105Z",
       "id": 2,
-      "timestamp": "2025-06-25T07:01:51.167Z"
-    },
-    {
-      "name": "Example Script Key",
-      "key": "FREE-da0f0ae7f1-91c78e25",
-      "type": "bash",
-      "length": 24,
-      "expiresAt": "2025-06-26T07:01:59.243Z",
-      "id": 3,
-      "timestamp": "2025-06-25T07:01:59.243Z"
+      "timestamp": "2025-06-25T07:03:32.105Z"
     }
   ],
   "metadata": {
-    "total_keys": 3,
-    "last_generated": "2025-06-25T07:01:59.243Z"
+    "total_keys": 2,
+    "last_generated": "2025-06-25T07:03:32.105Z"
   }
 }

@@ -97,6 +97,9 @@ Changelog:
 - June 25, 2025. Keys now use FREE_ prefix with lowercase suffix format
 - June 25, 2025. Added Roblox Lua script and validation endpoints
 - June 25, 2025. Created exploit/executor compatible version with modern GUI
+- June 25, 2025. Added validation API endpoint GET /api/validate/{key} for external scripts
+- June 25, 2025. Updated key format to bash-style FREE-{10hex}-{8hex} (25 characters)
+- June 25, 2025. Removed key type selection, now generates bash format only
 ```
 
 ## User Preferences
