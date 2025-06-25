@@ -47,8 +47,8 @@ export default function Home() {
     e.preventDefault();
     generateKeyMutation.mutate({
       name: keyName || "Unnamed Key",
-      type: keyType,
-      length: keyType === "custom" ? keyLength : keyType === "uuid" ? 36 : 32,
+      type: "bash",
+      length: 25, // Fixed length for bash format
     });
   };
 
@@ -113,7 +113,7 @@ export default function Home() {
             <i className="fas fa-plus text-white text-2xl"></i>
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Create Your Own Key</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">Generate FREE_ prefixed keys that expire in 24 hours.</p>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">Generate FREE- prefixed bash-style keys that expire in 24 hours.</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -140,40 +140,6 @@ export default function Home() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-
-                <div>
-                  <Label htmlFor="keyType" className="block text-sm font-medium text-gray-700 mb-2">
-                    Key Type
-                  </Label>
-                  <Select value={keyType} onValueChange={setKeyType}>
-                    <SelectTrigger className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="uuid">UUID (Recommended)</SelectItem>
-                      <SelectItem value="alphanumeric">Alphanumeric</SelectItem>
-                      <SelectItem value="hex">Hexadecimal</SelectItem>
-                      <SelectItem value="custom">Custom Length</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {keyType === "custom" && (
-                  <div>
-                    <Label htmlFor="keyLength" className="block text-sm font-medium text-gray-700 mb-2">
-                      Key Length
-                    </Label>
-                    <Input
-                      id="keyLength"
-                      type="number"
-                      min="8"
-                      max="128"
-                      value={keyLength}
-                      onChange={(e) => setKeyLength(parseInt(e.target.value))}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    />
-                  </div>
-                )}
 
                 <Button
                   type="submit"

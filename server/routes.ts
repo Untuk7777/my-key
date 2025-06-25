@@ -15,33 +15,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let generatedKey: string;
       
-      // Generate random lowercase letters for the suffix (5 characters max to keep total under 10)
-      const generateRandomSuffix = (maxLength: number) => {
-        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-        const suffixLength = Math.min(maxLength, 5); // Keep it short
-        return Array.from({ length: suffixLength }, () => 
+      // Generate bash-style key: FREE-9f2d7c1a3e-bd4f7a29
+      const generateHexSegment = (length: number) => {
+        const chars = '0123456789abcdef';
+        return Array.from({ length }, () => 
           chars.charAt(Math.floor(Math.random() * chars.length))
         ).join('');
       };
       
-      switch (type) {
-        case 'uuid':
-          generatedKey = 'FREE_' + generateRandomSuffix(5);
-          break;
-        case 'hex':
-          generatedKey = 'FREE_' + generateRandomSuffix(5);
-          break;
-        case 'alphanumeric':
-          generatedKey = 'FREE_' + generateRandomSuffix(5);
-          break;
-        case 'custom':
-          // For custom, respect the length but cap at 10 total
-          const customSuffixLength = Math.min(length - 5, 5); // Subtract 5 for "FREE_"
-          generatedKey = 'FREE_' + generateRandomSuffix(customSuffixLength);
-          break;
-        default:
-          generatedKey = 'FREE_' + generateRandomSuffix(5);
-      }
+      const segment1 = generateHexSegment(10); // 10 hex chars
+      const segment2 = generateHexSegment(8);  // 8 hex chars
+      generatedKey = `FREE-${segment1}-${segment2}`;
 
       // Set expiration to 1 day from now
       const expiresAt = new Date();
@@ -50,7 +34,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const keyData = {
         name: name || "Unnamed Key",
         key: generatedKey,
-        type: type || "uuid",
+        type: "bash",
         length: generatedKey.length,
         expiresAt
       };
@@ -141,27 +125,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Generate key endpoint for Roblox
+  // Generate key endpoint for external scripts
   app.post("/api/generate", async (req, res) => {
     try {
-      const keyName = req.body.name || "Roblox Key";
+      const keyName = req.body.name || "Generated Key";
       
       // Set expiration to 1 day from now
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 1);
 
-      // Generate lowercase gibberish after FREE_
-      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-      const suffix = Array.from({ length: 5 }, () => 
-        chars.charAt(Math.floor(Math.random() * chars.length))
-      ).join('');
+      // Generate bash-style key: FREE-9f2d7c1a3e-bd4f7a29
+      const generateHexSegment = (length: number) => {
+        const chars = '0123456789abcdef';
+        return Array.from({ length }, () => 
+          chars.charAt(Math.floor(Math.random() * chars.length))
+        ).join('');
+      };
       
-      const generatedKey = 'FREE_' + suffix;
+      const segment1 = generateHexSegment(10);
+      const segment2 = generateHexSegment(8);
+      const generatedKey = `FREE-${segment1}-${segment2}`;
 
       const keyData = {
         name: keyName,
         key: generatedKey,
-        type: 'roblox',
+        type: 'bash',
         length: generatedKey.length,
         expiresAt
       };
@@ -176,10 +164,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: savedKey.name
       });
     } catch (error) {
-      console.error('Error generating key for Roblox:', error);
+      console.error('Error generating key:', error);
       res.status(500).json({
         success: false,
         message: "Failed to generate key"
+      });
+    }
+  });
+
+  // Public API endpoint for key validation (for external scripts)
+  app.get("/api/validate/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      
+      if (!key) {
+        return res.json({
+          valid: false,
+          message: "No key provided"
+        });
+      }
+
+      const allKeys = await storage.getAllKeys();
+      const foundKey = allKeys.find(k => k.key === key);
+      
+      if (!foundKey) {
+        return res.json({
+          valid: false,
+          message: "Key not found"
+        });
+      }
+
+      // Check if key is expired
+      const now = new Date();
+      if (new Date(foundKey.expiresAt) < now) {
+        return res.json({
+          valid: false,
+          message: "Key has expired",
+          expired: true
+        });
+      }
+
+      res.json({
+        valid: true,
+        message: "Key is valid",
+        data: {
+          name: foundKey.name,
+          created: foundKey.timestamp,
+          expires: foundKey.expiresAt
+        }
+      });
+    } catch (error) {
+      console.error('Error validating key:', error);
+      res.status(500).json({
+        valid: false,
+        message: "Server error"
       });
     }
   });

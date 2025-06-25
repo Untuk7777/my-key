@@ -1,17 +1,35 @@
 {
   "keys": [
     {
-      "name": "Test Key",
-      "key": "FREE_8ut9d",
-      "type": "uuid",
-      "length": 10,
-      "expiresAt": "2025-06-26T06:58:38.862Z",
+      "name": "Bash Style Test",
+      "key": "FREE-f1d3b1ae20-3d587f47",
+      "type": "bash",
+      "length": 24,
+      "expiresAt": "2025-06-26T07:01:37.555Z",
       "id": 1,
-      "timestamp": "2025-06-25T06:58:38.862Z"
+      "timestamp": "2025-06-25T07:01:37.555Z"
+    },
+    {
+      "name": "API Test Key",
+      "key": "FREE-4606b5287f-915a381e",
+      "type": "bash",
+      "length": 24,
+      "expiresAt": "2025-06-26T07:01:51.166Z",
+      "id": 2,
+      "timestamp": "2025-06-25T07:01:51.167Z"
+    },
+    {
+      "name": "Example Script Key",
+      "key": "FREE-da0f0ae7f1-91c78e25",
+      "type": "bash",
+      "length": 24,
+      "expiresAt": "2025-06-26T07:01:59.243Z",
+      "id": 3,
+      "timestamp": "2025-06-25T07:01:59.243Z"
     }
   ],
   "metadata": {
-    "total_keys": 1,
-    "last_generated": "2025-06-25T06:58:38.862Z"
+    "total_keys": 3,
+    "last_generated": "2025-06-25T07:01:59.243Z"
   }
 }
