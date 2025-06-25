@@ -26,7 +26,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export const insertKeySchema = createInsertSchema(keys).omit({
   id: true,
   timestamp: true,
-  expiresAt: true,
+}).extend({
+  expiresAt: z.date().optional(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

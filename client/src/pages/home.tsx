@@ -95,11 +95,11 @@ export default function Home() {
               <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-2 rounded-lg">
                 <i className="fas fa-key text-white text-xl"></i>
               </div>
-              <h1 className="text-xl font-semibold text-gray-900">Key Generator</h1>
+              <h1 className="text-xl font-semibold text-gray-900">stupidxxwhn</h1>
             </div>
             <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <i className="fas fa-shield-alt"></i>
-              <span>Secure Key Generation</span>
+              <i className="fas fa-key"></i>
+              <span>Key Generator</span>
             </div>
           </div>
         </div>
@@ -113,7 +113,7 @@ export default function Home() {
             <i className="fas fa-plus text-white text-2xl"></i>
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Create Your Own Key</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">Generate unique, secure keys instantly and store them safely in your personal key vault.</p>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">Generate FREE_ prefixed keys that expire in 24 hours.</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -341,36 +341,7 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        {/* Features Section */}
-        <div className="mt-12 grid md:grid-cols-3 gap-8">
-          <Card className="text-center p-6 bg-white rounded-xl shadow-lg border border-slate-200 animate-slide-up animate-delay-600ms">
-            <CardContent className="p-0">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-shield-alt text-white"></i>
-              </div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">Secure Generation</h4>
-              <p className="text-gray-600 text-sm">Cryptographically secure random key generation using industry-standard algorithms.</p>
-            </CardContent>
-          </Card>
-          <Card className="text-center p-6 bg-white rounded-xl shadow-lg border border-slate-200 animate-slide-up animate-delay-800ms">
-            <CardContent className="p-0">
-              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-save text-white"></i>
-              </div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">Persistent Storage</h4>
-              <p className="text-gray-600 text-sm">All generated keys are automatically saved to a JSON file for future reference.</p>
-            </CardContent>
-          </Card>
-          <Card className="text-center p-6 bg-white rounded-xl shadow-lg border border-slate-200 animate-slide-up animate-delay-1000ms">
-            <CardContent className="p-0">
-              <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-cogs text-white"></i>
-              </div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">Customizable</h4>
-              <p className="text-gray-600 text-sm">Choose from multiple key types, lengths, and naming options to fit your needs.</p>
-            </CardContent>
-          </Card>
-        </div>
+
       </main>
     </div>
   );

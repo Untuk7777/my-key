@@ -67,7 +67,7 @@ export class MemStorage implements IStorage {
       ...insertKey, 
       id, 
       timestamp: new Date(),
-      expiresAt: insertKey.expiresAt
+      expiresAt: insertKey.expiresAt || new Date()
     };
     this.keys.set(id, key);
     
