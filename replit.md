@@ -96,6 +96,7 @@ Changelog:
 - June 25, 2025. Added key expiration (24 hours) and Roblox integration
 - June 25, 2025. Keys now use FREE_ prefix with lowercase suffix format
 - June 25, 2025. Added Roblox Lua script and validation endpoints
+- June 25, 2025. Created exploit/executor compatible version with modern GUI
 ```
 
 ## User Preferences
