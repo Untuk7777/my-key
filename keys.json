@@ -2,51 +2,18 @@
   "keys": [
     {
       "name": "Unnamed Key",
-      "key": "FREE-8076eb9dad-ff516283",
+      "key": "FREE-2b621953f9-49ce78fb",
       "type": "bash",
       "length": 24,
-      "expiresAt": "2025-06-26T08:37:57.752Z",
+      "expiresAt": "2025-06-26T13:25:16.666Z",
       "used": 0,
       "maxUses": 1,
       "id": 1,
-      "timestamp": "2025-06-25T08:37:57.752Z"
-    },
-    {
-      "name": "Privacy Test",
-      "key": "FREE-9ebb11918d-a79b3c1d",
-      "type": "bash",
-      "length": 24,
-      "expiresAt": "2025-06-26T09:22:27.678Z",
-      "used": 0,
-      "maxUses": 1,
-      "id": 2,
-      "timestamp": "2025-06-25T09:22:27.678Z"
-    },
-    {
-      "name": "Unnamed Key",
-      "key": "FREE-475d08e63a-c6df79e1",
-      "type": "bash",
-      "length": 24,
-      "expiresAt": "2025-06-26T09:22:57.097Z",
-      "used": 0,
-      "maxUses": 1,
-      "id": 3,
-      "timestamp": "2025-06-25T09:22:57.097Z"
-    },
-    {
-      "name": "Unnamed Key",
-      "key": "FREE-5121e1d312-3c0083c2",
-      "type": "bash",
-      "length": 24,
-      "expiresAt": "2025-06-26T09:23:13.269Z",
-      "used": 0,
-      "maxUses": 1,
-      "id": 4,
-      "timestamp": "2025-06-25T09:23:13.269Z"
+      "timestamp": "2025-06-25T13:25:16.666Z"
     }
   ],
   "metadata": {
-    "total_keys": 4,
-    "last_generated": "2025-06-25T09:23:13.269Z"
+    "total_keys": 1,
+    "last_generated": "2025-06-25T13:25:16.666Z"
   }
 }
