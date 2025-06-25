@@ -101,6 +101,7 @@ Changelog:
 - June 25, 2025. Updated key format to bash-style FREE-{10hex}-{8hex} (25 characters)
 - June 25, 2025. Removed key type selection, now generates bash format only
 - June 25, 2025. Implemented one-time key usage - each key can only be validated once
+- June 25, 2025. Added key privacy masking in database display (FREE-1fb1f*****-********)
 ```
 
 ## User Preferences

@@ -1,19 +1,30 @@
 {
   "keys": [
     {
-      "name": "Validator Test",
-      "key": "FREE-9d603b427f-9a910073",
+      "name": "Unnamed Key",
+      "key": "FREE-8076eb9dad-ff516283",
       "type": "bash",
       "length": 24,
-      "expiresAt": "2025-06-26T07:26:47.000Z",
+      "expiresAt": "2025-06-26T08:37:57.752Z",
       "used": 0,
       "maxUses": 1,
       "id": 1,
-      "timestamp": "2025-06-25T07:26:47.000Z"
+      "timestamp": "2025-06-25T08:37:57.752Z"
+    },
+    {
+      "name": "Privacy Test",
+      "key": "FREE-9ebb11918d-a79b3c1d",
+      "type": "bash",
+      "length": 24,
+      "expiresAt": "2025-06-26T09:22:27.678Z",
+      "used": 0,
+      "maxUses": 1,
+      "id": 2,
+      "timestamp": "2025-06-25T09:22:27.678Z"
     }
   ],
   "metadata": {
-    "total_keys": 1,
-    "last_generated": "2025-06-25T07:26:47.000Z"
+    "total_keys": 2,
+    "last_generated": "2025-06-25T09:22:27.678Z"
   }
 }

@@ -11,6 +11,23 @@ import { Link } from "wouter";
 import { Search } from "lucide-react";
 import type { Key } from "@shared/schema";
 
+// Helper function to mask keys for privacy
+const maskKey = (key: string): string => {
+  if (!key.startsWith("FREE-")) return key;
+  const parts = key.split("-");
+  if (parts.length !== 3) return key;
+  
+  const prefix = parts[0]; // "FREE"
+  const firstSegment = parts[1]; // e.g., "1fb1fa5ca"
+  const secondSegment = parts[2]; // e.g., "ff516abc"
+  
+  // Show first 5 characters of first segment, mask the rest
+  const maskedFirstSegment = firstSegment.substring(0, 5) + "*".repeat(Math.max(0, firstSegment.length - 5));
+  const maskedSecondSegment = "*".repeat(secondSegment.length);
+  
+  return `${prefix}-${maskedFirstSegment}-${maskedSecondSegment}`;
+};
+
 export default function Home() {
   const [keyName, setKeyName] = useState("");
   const [keyType, setKeyType] = useState("uuid");
@@ -271,13 +288,24 @@ export default function Home() {
                   </div>
                 ) : (
                   <code dangerouslySetInnerHTML={{
-                    __html: JSON.stringify(fileData || { keys: [], metadata: { total_keys: 0, last_generated: null } }, null, 2)
-                      .replace(/("keys":|"metadata":|"total_keys":|"last_generated":|"id":|"name":|"key":|"type":|"length":|"timestamp":)/g, '<span class="text-emerald-400">$1</span>')
-                      .replace(/(\d+)/g, '<span class="text-purple-400">$1</span>')
-                      .replace(/(null)/g, '<span class="text-orange-400">$1</span>')
-                      .replace(/(".*?")/g, '<span class="text-yellow-400">$1</span>')
-                      .replace(/([{}])/g, '<span class="text-blue-400">$1</span>')
-                      .replace(/([[\\]])/g, '<span class="text-yellow-400">$1</span>')
+                    __html: (() => {
+                      // Create a copy of fileData with masked keys
+                      const dataCopy = JSON.parse(JSON.stringify(fileData || { keys: [], metadata: { total_keys: 0, last_generated: null } }));
+                      if (dataCopy.keys && Array.isArray(dataCopy.keys)) {
+                        dataCopy.keys = dataCopy.keys.map((keyObj: any) => ({
+                          ...keyObj,
+                          key: maskKey(keyObj.key || "")
+                        }));
+                      }
+                      
+                      return JSON.stringify(dataCopy, null, 2)
+                        .replace(/("keys":|"metadata":|"total_keys":|"last_generated":|"id":|"name":|"key":|"type":|"length":|"timestamp":)/g, '<span class="text-emerald-400">$1</span>')
+                        .replace(/(\d+)/g, '<span class="text-purple-400">$1</span>')
+                        .replace(/(null)/g, '<span class="text-orange-400">$1</span>')
+                        .replace(/(".*?")/g, '<span class="text-yellow-400">$1</span>')
+                        .replace(/([{}])/g, '<span class="text-blue-400">$1</span>')
+                        .replace(/([[\\]])/g, '<span class="text-yellow-400">$1</span>');
+                    })()
                   }} />
                 )}
               </pre>
