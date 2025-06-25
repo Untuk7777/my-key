@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import { Search } from "lucide-react";
 import type { Key } from "@shared/schema";
+import ReCAPTCHA from "react-google-recaptcha";
 
 // Helper function to mask keys for privacy
 const maskKey = (key: string): string => {
@@ -33,6 +34,8 @@ export default function Home() {
   const [keyType, setKeyType] = useState("uuid");
   const [keyLength, setKeyLength] = useState(32);
   const [currentKey, setCurrentKey] = useState<Key | null>(null);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -41,22 +44,36 @@ export default function Home() {
   });
 
   const generateKeyMutation = useMutation({
-    mutationFn: async (keyData: { name: string; type: string; length: number }) => {
+    mutationFn: async (keyData: { name: string; type: string; length: number; recaptchaToken: string }) => {
       const response = await apiRequest("POST", "/api/keys", keyData);
       return response.json();
     },
     onSuccess: (newKey: Key) => {
       setCurrentKey(newKey);
+      setRecaptchaToken(null);
+      recaptchaRef.current?.reset();
       queryClient.invalidateQueries({ queryKey: ["/api/keys/file"] });
       toast({
         title: "Success!",
         description: "Key generated successfully!",
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      let errorMessage = "Failed to generate key. Please try again.";
+      
+      if (error.message?.includes("RECAPTCHA")) {
+        errorMessage = "Please complete the reCAPTCHA verification";
+      } else if (error.message?.includes("Too many")) {
+        errorMessage = "You can only generate 1 key every 3 hours. Please try again later.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setRecaptchaToken(null);
+      recaptchaRef.current?.reset();
       toast({
         title: "Error",
-        description: "Failed to generate key. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -64,11 +81,26 @@ export default function Home() {
 
   const handleGenerateKey = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!recaptchaToken) {
+      toast({
+        title: "reCAPTCHA Required",
+        description: "Please complete the reCAPTCHA verification first",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     generateKeyMutation.mutate({
       name: keyName || "Unnamed Key",
       type: "bash",
       length: 25, // Fixed length for bash format
+      recaptchaToken: recaptchaToken,
     });
+  };
+
+  const handleRecaptchaChange = (token: string | null) => {
+    setRecaptchaToken(token);
   };
 
   const copyToClipboard = async () => {
@@ -169,10 +201,19 @@ export default function Home() {
                   />
                 </div>
 
+                {/* reCAPTCHA */}
+                <div className="flex justify-center mb-6">
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey="6Ld8hW0rAAAAAJYpkK3BZsGvMPl5oYzxJGD1bxuo"
+                    onChange={handleRecaptchaChange}
+                  />
+                </div>
+
                 <Button
                   type="submit"
-                  disabled={generateKeyMutation.isPending}
-                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-4 px-6 rounded-lg hover:from-blue-600 hover:to-blue-700 focus:ring-4 focus:ring-blue-200 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                  disabled={generateKeyMutation.isPending || !recaptchaToken}
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-4 px-6 rounded-lg hover:from-blue-600 hover:to-blue-700 focus:ring-4 focus:ring-blue-200 transform hover:scale-105 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {generateKeyMutation.isPending ? (
                     <>

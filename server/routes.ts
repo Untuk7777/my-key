@@ -1,17 +1,69 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-
-
+import { insertKeySchema } from "@shared/schema";
+import { z } from "zod";
+import rateLimit from "express-rate-limit";
 import { randomUUID } from 'crypto';
+
+// Rate limiter for key generation - 1 key per 3 hours
+const keyGenerationLimiter = rateLimit({
+  windowMs: 3 * 60 * 60 * 1000, // 3 hours
+  max: 1, // limit each IP to 1 request per windowMs
+  message: {
+    error: "Too many key generation requests",
+    message: "You can only generate 1 key every 3 hours. Please try again later.",
+    retryAfter: 3 * 60 * 60 * 1000
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Function to verify reCAPTCHA
+async function verifyRecaptcha(token: string): Promise<boolean> {
+  try {
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `secret=6Ld8hW0rAAAAAFNe6xHaok_uy6TbyYeAljiUadcG&response=${token}`
+    });
+    
+    const data = await response.json();
+    return data.success === true;
+  } catch (error) {
+    console.error('reCAPTCHA verification error:', error);
+    return false;
+  }
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Generate a new key
-  app.post("/api/keys", async (req, res) => {
+  // Generate a new key with reCAPTCHA verification and rate limiting
+  app.post("/api/keys", keyGenerationLimiter, async (req, res) => {
     try {
       console.log("Request body:", req.body);
-      const { name, type, length } = req.body;
+      
+      // Verify reCAPTCHA first
+      const { recaptchaToken, ...keyData } = req.body;
+      
+      if (!recaptchaToken) {
+        return res.status(400).json({ 
+          message: "reCAPTCHA verification required",
+          error: "RECAPTCHA_MISSING"
+        });
+      }
+      
+      const isRecaptchaValid = await verifyRecaptcha(recaptchaToken);
+      if (!isRecaptchaValid) {
+        return res.status(400).json({ 
+          message: "reCAPTCHA verification failed. Please try again.",
+          error: "RECAPTCHA_INVALID"
+        });
+      }
+      
+      const { name, type, length } = keyData;
       
       let generatedKey: string;
       
@@ -31,7 +83,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 1);
 
-      const keyData = {
+      const keyToCreate = {
         name: name || "Unnamed Key",
         key: generatedKey,
         type: "bash",
@@ -41,7 +93,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         maxUses: 1
       };
 
-      const savedKey = await storage.createKey(keyData);
+      const savedKey = await storage.createKey(keyToCreate);
       res.json(savedKey);
     } catch (error) {
       console.error('Error generating key:', error);

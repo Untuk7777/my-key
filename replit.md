@@ -82,6 +82,7 @@ This is a full-stack key generation and validation application built with React 
 Changelog:
 - June 25, 2025. Initial setup  
 - June 25, 2025. Replaced keys.json file storage with SQLite3 database
+- June 25, 2025. Added Google reCAPTCHA v2 verification and rate limiting (1 key per 3 hours)
 
 ## User Preferences
 
