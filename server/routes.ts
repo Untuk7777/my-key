@@ -253,6 +253,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Key check endpoint (doesn't consume the key)
+  app.get("/api/keys/check/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      
+      // Get all keys to find the matching one
+      const fileData = await storage.getKeysFromFile();
+      const foundKey = fileData.keys.find(k => k.key === key);
+      
+      if (!foundKey) {
+        return res.json({
+          valid: false,
+          message: "Key not found"
+        });
+      }
+
+      // Check if key is expired
+      const now = new Date();
+      if (new Date(foundKey.expiresAt) < now) {
+        return res.json({
+          valid: false,
+          message: "Key has expired",
+          expired: true,
+          data: {
+            name: foundKey.name,
+            created: foundKey.timestamp,
+            expires: foundKey.expiresAt
+          }
+        });
+      }
+
+      // Check if key has been used up
+      if (foundKey.used >= foundKey.maxUses) {
+        return res.json({
+          valid: false,
+          message: "Key has already been used",
+          used: true,
+          data: {
+            name: foundKey.name,
+            created: foundKey.timestamp,
+            expires: foundKey.expiresAt
+          }
+        });
+      }
+
+      // Key is valid and available
+      res.json({
+        valid: true,
+        message: "Key is valid and available for use",
+        data: {
+          name: foundKey.name,
+          created: foundKey.timestamp,
+          expires: foundKey.expiresAt,
+          usesRemaining: foundKey.maxUses - foundKey.used
+        }
+      });
+
+    } catch (error) {
+      console.error("Error checking key:", error);
+      res.status(500).json({
+        valid: false,
+        message: "Server error",
+        error: true
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

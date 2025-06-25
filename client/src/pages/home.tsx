@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { Link } from "wouter";
+import { Search } from "lucide-react";
 import type { Key } from "@shared/schema";
 
 export default function Home() {
@@ -114,6 +116,15 @@ export default function Home() {
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Create Your Own Key</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">Generate FREE- prefixed bash-style keys that expire in 24 hours.</p>
+          
+          <div className="mt-6">
+            <Link href="/validator">
+              <Button variant="outline" className="gap-2">
+                <Search className="h-4 w-4" />
+                Key Validator
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">

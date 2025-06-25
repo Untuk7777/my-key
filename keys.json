@@ -1,19 +1,19 @@
 {
   "keys": [
     {
-      "name": "Usage Test",
-      "key": "FREE-2172bc0ab6-98495912",
+      "name": "Validator Test",
+      "key": "FREE-9d603b427f-9a910073",
       "type": "bash",
       "length": 24,
-      "expiresAt": "2025-06-26T07:09:38.154Z",
-      "used": 1,
+      "expiresAt": "2025-06-26T07:26:47.000Z",
+      "used": 0,
       "maxUses": 1,
       "id": 1,
-      "timestamp": "2025-06-25T07:09:38.154Z"
+      "timestamp": "2025-06-25T07:26:47.000Z"
     }
   ],
   "metadata": {
     "total_keys": 1,
-    "last_generated": "2025-06-25T07:09:38.154Z"
+    "last_generated": "2025-06-25T07:26:47.000Z"
   }
 }
