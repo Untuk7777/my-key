@@ -66,5 +66,19 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    
+    // Display API endpoints
+    console.log("\n=== API ENDPOINTS ===");
+    if (process.env.NODE_ENV === "production" && process.env.REPLIT_DOMAINS) {
+      console.log(`Validation: https://${process.env.REPLIT_DOMAINS}/api/validate/{key}`);
+      console.log(`Generation: https://${process.env.REPLIT_DOMAINS}/api/generate`);
+    } else {
+      console.log("Validation: http://localhost:5000/api/validate/{key}");
+      console.log("Generation: http://localhost:5000/api/generate");
+      if (process.env.NODE_ENV === "development") {
+        console.log("\nAfter deployment, check console for live URLs");
+      }
+    }
+    console.log("====================\n");
   });
 })();
