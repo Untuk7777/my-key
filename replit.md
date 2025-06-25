@@ -93,6 +93,9 @@ The application is configured for deployment on Replit with the following setup:
 ```
 Changelog:
 - June 25, 2025. Initial setup
+- June 25, 2025. Added key expiration (24 hours) and Roblox integration
+- June 25, 2025. Keys now use FREE_ prefix with lowercase suffix format
+- June 25, 2025. Added Roblox Lua script and validation endpoints
 ```
 
 ## User Preferences

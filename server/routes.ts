@@ -84,6 +84,105 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Roblox key validation endpoint
+  app.post("/api/validate", async (req, res) => {
+    try {
+      const { key } = req.body;
+      
+      if (!key) {
+        return res.json({
+          success: false,
+          message: "Key is required",
+          valid: false
+        });
+      }
+
+      const allKeys = await storage.getAllKeys();
+      const foundKey = allKeys.find(k => k.key === key);
+      
+      if (!foundKey) {
+        return res.json({
+          success: false,
+          message: "Invalid key",
+          valid: false
+        });
+      }
+
+      // Check if key is expired
+      const now = new Date();
+      if (new Date(foundKey.expiresAt) < now) {
+        return res.json({
+          success: false,
+          message: "Key has expired",
+          valid: false,
+          expired: true
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Key is valid",
+        valid: true,
+        keyData: {
+          name: foundKey.name,
+          type: foundKey.type,
+          created: foundKey.timestamp,
+          expires: foundKey.expiresAt
+        }
+      });
+    } catch (error) {
+      console.error('Error validating key:', error);
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+        valid: false
+      });
+    }
+  });
+
+  // Generate key endpoint for Roblox
+  app.post("/api/generate", async (req, res) => {
+    try {
+      const keyName = req.body.name || "Roblox Key";
+      
+      // Set expiration to 1 day from now
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 1);
+
+      // Generate lowercase gibberish after FREE_
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      const suffix = Array.from({ length: 5 }, () => 
+        chars.charAt(Math.floor(Math.random() * chars.length))
+      ).join('');
+      
+      const generatedKey = 'FREE_' + suffix;
+
+      const keyData = {
+        name: keyName,
+        key: generatedKey,
+        type: 'roblox',
+        length: generatedKey.length,
+        expiresAt
+      };
+
+      const savedKey = await storage.createKey(keyData);
+      
+      res.json({
+        success: true,
+        message: "Key generated successfully",
+        key: savedKey.key,
+        expires: savedKey.expiresAt,
+        name: savedKey.name
+      });
+    } catch (error) {
+      console.error('Error generating key for Roblox:', error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate key"
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
