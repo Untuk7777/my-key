@@ -17,8 +17,8 @@ This is a full-stack key generation and validation application built with React 
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js
 - **Language**: TypeScript with ES modules
-- **Database**: PostgreSQL with Drizzle ORM
-- **Storage**: Hybrid approach using both database and JSON file storage
+- **Database**: SQLite3 for key storage, PostgreSQL available for future use
+- **Storage**: SQLite database storage with IStorage abstraction
 - **Development**: Hot reload with tsx for development server
 
 ### Key Components
@@ -80,7 +80,8 @@ This is a full-stack key generation and validation application built with React 
 ## Changelog
 
 Changelog:
-- June 25, 2025. Initial setup
+- June 25, 2025. Initial setup  
+- June 25, 2025. Replaced keys.json file storage with SQLite3 database
 
 ## User Preferences
 

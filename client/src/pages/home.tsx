@@ -256,7 +256,7 @@ export default function Home() {
           </Card>
         </div>
 
-        {/* Keys.json Viewer */}
+        {/* SQLite Database Viewer */}
         <Card className="mt-12 bg-white rounded-2xl shadow-xl border border-slate-200 p-8 animate-slide-up animate-delay-400ms">
           <CardContent className="p-0">
             <div className="flex items-center justify-between mb-6">
@@ -267,7 +267,7 @@ export default function Home() {
                 <h3 className="text-2xl font-semibold text-gray-900">Keys Database</h3>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-500">keys.json</span>
+                <span className="text-sm text-gray-500">SQLite Database</span>
                 <Button
                   onClick={refreshDatabase}
                   variant="secondary"
