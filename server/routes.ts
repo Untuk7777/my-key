@@ -1,8 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertKeySchema } from "@shared/schema";
-import { z } from "zod";
+
+
 import { randomUUID } from 'crypto';
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -10,7 +10,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Generate a new key
   app.post("/api/keys", async (req, res) => {
     try {
-      const { name, type, length } = insertKeySchema.parse(req.body);
+      console.log("Request body:", req.body);
+      const { name, type, length } = req.body;
       
       let generatedKey: string;
       
@@ -47,9 +48,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       expiresAt.setDate(expiresAt.getDate() + 1);
 
       const keyData = {
-        name,
+        name: name || "Unnamed Key",
         key: generatedKey,
-        type,
+        type: type || "uuid",
         length: generatedKey.length,
         expiresAt
       };

@@ -1,7 +1,17 @@
 {
-  "keys": [],
+  "keys": [
+    {
+      "name": "Test Key",
+      "key": "FREE_8ut9d",
+      "type": "uuid",
+      "length": 10,
+      "expiresAt": "2025-06-26T06:58:38.862Z",
+      "id": 1,
+      "timestamp": "2025-06-25T06:58:38.862Z"
+    }
+  ],
   "metadata": {
-    "total_keys": 0,
-    "last_generated": null
+    "total_keys": 1,
+    "last_generated": "2025-06-25T06:58:38.862Z"
   }
 }
