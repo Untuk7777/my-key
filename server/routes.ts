@@ -36,7 +36,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         key: generatedKey,
         type: "bash",
         length: generatedKey.length,
-        expiresAt
+        expiresAt,
+        used: 0,
+        maxUses: 1
       };
 
       const savedKey = await storage.createKey(keyData);
@@ -104,15 +106,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Check if key has been used up
+      if (foundKey.used >= foundKey.maxUses) {
+        return res.json({
+          success: false,
+          message: "Key has already been used",
+          valid: false,
+          used: true
+        });
+      }
+
+      // Mark key as used
+      await storage.markKeyAsUsed(foundKey.id);
+
       res.json({
         success: true,
-        message: "Key is valid",
+        message: "Key is valid and has been consumed",
         valid: true,
         keyData: {
           name: foundKey.name,
           type: foundKey.type,
           created: foundKey.timestamp,
-          expires: foundKey.expiresAt
+          expires: foundKey.expiresAt,
+          usesRemaining: foundKey.maxUses - (foundKey.used + 1)
         }
       });
     } catch (error) {
@@ -151,7 +167,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         key: generatedKey,
         type: 'bash',
         length: generatedKey.length,
-        expiresAt
+        expiresAt,
+        used: 0,
+        maxUses: 1
       };
 
       const savedKey = await storage.createKey(keyData);
@@ -204,13 +222,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Check if key has been used up
+      if (foundKey.used >= foundKey.maxUses) {
+        return res.json({
+          valid: false,
+          message: "Key has already been used",
+          used: true
+        });
+      }
+
+      // Mark key as used
+      await storage.markKeyAsUsed(foundKey.id);
+
       res.json({
         valid: true,
-        message: "Key is valid",
+        message: "Key is valid and has been consumed",
         data: {
           name: foundKey.name,
           created: foundKey.timestamp,
-          expires: foundKey.expiresAt
+          expires: foundKey.expiresAt,
+          usesRemaining: foundKey.maxUses - (foundKey.used + 1)
         }
       });
     } catch (error) {

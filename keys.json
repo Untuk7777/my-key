@@ -1,26 +1,19 @@
 {
   "keys": [
     {
-      "name": "Lua Test Key",
-      "key": "FREE-943ab75601-099419a6",
+      "name": "Usage Test",
+      "key": "FREE-2172bc0ab6-98495912",
       "type": "bash",
       "length": 24,
-      "expiresAt": "2025-06-26T07:03:30.462Z",
+      "expiresAt": "2025-06-26T07:09:38.154Z",
+      "used": 1,
+      "maxUses": 1,
       "id": 1,
-      "timestamp": "2025-06-25T07:03:30.462Z"
-    },
-    {
-      "name": "Demo Key",
-      "key": "FREE-07f6715a7d-90f4712d",
-      "type": "bash",
-      "length": 24,
-      "expiresAt": "2025-06-26T07:03:32.105Z",
-      "id": 2,
-      "timestamp": "2025-06-25T07:03:32.105Z"
+      "timestamp": "2025-06-25T07:09:38.154Z"
     }
   ],
   "metadata": {
-    "total_keys": 2,
-    "last_generated": "2025-06-25T07:03:32.105Z"
+    "total_keys": 1,
+    "last_generated": "2025-06-25T07:09:38.154Z"
   }
 }

@@ -16,6 +16,8 @@ export const keys = pgTable("keys", {
   length: integer("length").notNull(),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
   expiresAt: timestamp("expires_at").notNull(),
+  used: integer("used").default(0).notNull(),
+  maxUses: integer("max_uses").default(1).notNull(),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -28,6 +30,8 @@ export const insertKeySchema = createInsertSchema(keys).omit({
   timestamp: true,
   expiresAt: true,
   key: true,
+  used: true,
+  maxUses: true,
 }).extend({
   expiresAt: z.date().optional(),
 });
