@@ -27,7 +27,7 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: `secret=6Ld8hW0rAAAAAFNe6xHaok_uy6TbyYeAljiUadcG&response=${token}`
+      body: `secret=6Ldj8G0rAAAAAEWOd28s4GN029jE8-F5UubBZyJB&response=${token}`
     });
     
     const data = await response.json();

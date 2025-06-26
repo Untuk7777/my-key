@@ -205,7 +205,7 @@ export default function Home() {
                 <div className="flex justify-center mb-6">
                   <ReCAPTCHA
                     ref={recaptchaRef}
-                    sitekey="6Ld8hW0rAAAAAJYpkK3BZsGvMPl5oYzxJGD1bxuo"
+                    sitekey="6Ldj8G0rAAAAACRjs_f67E9Ycsy9f-iQZEB3WeA_"
                     onChange={handleRecaptchaChange}
                   />
                 </div>
