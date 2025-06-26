@@ -75,9 +75,10 @@ app.use((req, res, next) => {
       console.log(`Generation: https://${process.env.REPLIT_DOMAINS}/api/generate`);
       console.log(`Key Checker: https://${process.env.REPLIT_DOMAINS}/api/keys/check/{key}`);
     } else {
-      console.log("Validation: http://localhost:5000/api/validate/{key}");
-      console.log("Generation: http://localhost:5000/api/generate");
+      console.log("Key Generator: http://localhost:5000/api/keys");
       console.log("Key Checker: http://localhost:5000/api/keys/check/{key}");
+      console.log("Roblox Validator: http://localhost:5000/validate?key={key}");
+      console.log("Roblox Script: http://localhost:5000/getscript?key={key}");
       if (process.env.NODE_ENV === "development") {
         console.log("\nAfter deployment, check console for live URLs");
       }

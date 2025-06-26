@@ -23,6 +23,116 @@ const keyGenerationLimiter = rateLimit({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // Roblox executor style validation endpoint (must be first to avoid frontend route conflicts)
+  app.get("/validate", async (req, res) => {
+    try {
+      const key = req.query.key as string;
+      
+      if (!key) {
+        return res.status(400).send("invalid key");
+      }
+
+      // Clean up expired keys first
+      await storage.cleanupExpired();
+      
+      const keys = await storage.getAllKeys();
+      const foundKey = keys.find(k => k.key === key);
+      
+      if (!foundKey) {
+        return res.status(404).send("invalid key");
+      }
+
+      // Check if key is expired (24 hours)
+      const now = new Date();
+      const keyCreated = new Date(foundKey.timestamp);
+      const hoursDiff = (now.getTime() - keyCreated.getTime()) / (1000 * 60 * 60);
+      
+      if (hoursDiff > 24) {
+        return res.status(410).send("key expired");
+      }
+
+      // Check if key was already used
+      if (foundKey.used) {
+        return res.status(409).send("key already used");
+      }
+
+      // Key is valid
+      res.status(200).send("valid key");
+      
+    } catch (error) {
+      console.error('Error validating key:', error);
+      res.status(500).send("server error");
+    }
+  });
+
+  // Roblox executor style script delivery endpoint (must be early to avoid frontend route conflicts)
+  app.get("/getscript", async (req, res) => {
+    try {
+      const key = req.query.key as string;
+      
+      if (!key) {
+        return res.status(400).send("-- No key provided");
+      }
+
+      // Clean up expired keys first
+      await storage.cleanupExpired();
+      
+      const keys = await storage.getAllKeys();
+      const foundKey = keys.find(k => k.key === key);
+      
+      if (!foundKey) {
+        return res.status(404).send("-- Invalid key");
+      }
+
+      // Check if key is expired (24 hours)
+      const now = new Date();
+      const keyCreated = new Date(foundKey.timestamp);
+      const hoursDiff = (now.getTime() - keyCreated.getTime()) / (1000 * 60 * 60);
+      
+      if (hoursDiff > 24) {
+        return res.status(410).send("-- Key expired");
+      }
+
+      // Check if key was already used
+      if (foundKey.used) {
+        return res.status(409).send("-- Key already used");
+      }
+
+      // Mark key as used
+      await storage.markKeyAsUsed(foundKey.id);
+
+      // Return the script (you can customize this script)
+      const script = `-- Your script has been loaded successfully!
+print("✓ Key validated and script loaded!")
+print("✓ Welcome to the executor!")
+
+-- Example script functionality
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+if player then
+    print("✓ Player: " .. player.Name)
+    print("✓ Script execution completed successfully!")
+    
+    -- Add your actual script functionality here
+    -- This is where your executor script would go
+    
+else
+    print("✗ Could not find local player")
+end
+
+-- Script loaded at: ${new Date().toISOString()}
+-- Key used: ${key.substring(0, 8)}...`;
+
+      res.setHeader('Content-Type', 'text/plain');
+      res.status(200).send(script);
+      
+    } catch (error) {
+      console.error('Error delivering script:', error);
+      res.status(500).send("-- Server error occurred");
+    }
+  });
+
   // Generate a new key with rate limiting
   app.post("/api/keys", keyGenerationLimiter, async (req, res) => {
     try {

@@ -90,6 +90,8 @@ Changelog:
 - June 26, 2025. Added server-side protected search functionality that shows only 1 key result
 - June 26, 2025. Implemented automatic cleanup of expired keys from SQLite database on all operations
 - June 26, 2025. Added server-side protection with secret-based authentication for search API
+- June 26, 2025. Implemented Roblox executor-style endpoints: /validate and /getscript for script delivery system
+- June 26, 2025. Added key consumption on script delivery to prevent reuse of keys
 
 ## User Preferences
 
