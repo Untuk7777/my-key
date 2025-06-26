@@ -85,6 +85,8 @@ Changelog:
 - June 25, 2025. Added rate limiting (1 key per 3 hours)
 - June 26, 2025. Updated rate limiting to 3 keys per 15 minutes with "Hold on Cooldown.." message
 - June 26, 2025. Modified database to show only one key at a time (clears previous keys when generating new ones)
+- June 26, 2025. Removed single-key limitation to allow multiple keys simultaneously
+- June 26, 2025. Added secret page at /secret.page/gT7mA5zP2bW0kQeN81XrL9aFuCjYzTq47KvHdEp3MmNs with access restrictions
 
 ## User Preferences
 

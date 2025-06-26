@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/home";
 import Validator from "@/pages/validator";
+import Secret from "@/pages/secret";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -12,6 +13,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/validator" component={Validator} />
+      <Route path="/secret.page/gT7mA5zP2bW0kQeN81XrL9aFuCjYzTq47KvHdEp3MmNs" component={Secret} />
       <Route component={NotFound} />
     </Switch>
   );
