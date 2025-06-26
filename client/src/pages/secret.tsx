@@ -1,16 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useLocation } from "wouter";
-import { Eye, EyeOff, Copy, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, Copy, AlertTriangle, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import type { Key } from "@shared/schema";
 
 export default function Secret() {
   const [location] = useLocation();
   const [showKeys, setShowKeys] = useState(false);
   const [accessAttempts, setAccessAttempts] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Key[]>([]);
+  const [isSearchMode, setIsSearchMode] = useState(false);
   const { toast } = useToast();
 
   // Check if someone is trying to access the secret page
@@ -19,16 +24,46 @@ export default function Secret() {
     const isValidationCheck = location.includes("check") || location.includes("validate");
     
     if (!isValidationCheck) {
-      setAccessAttempts(prev => prev + 1);
-      if (accessAttempts >= 2) {
-        // Redirect to home after multiple attempts
-        window.location.href = "/";
-      }
+      setAccessAttempts(prev => {
+        const newAttempts = prev + 1;
+        if (newAttempts >= 3) {
+          // Redirect to home after multiple attempts
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1000);
+        }
+        return newAttempts;
+      });
     }
-  }, [location, accessAttempts]);
+  }, [location]); // Removed accessAttempts from dependencies to prevent infinite loop
 
   const { data: allKeys, isLoading } = useQuery({
     queryKey: ["/api/keys"],
+  });
+
+  const searchMutation = useMutation({
+    mutationFn: async (query: string) => {
+      const response = await apiRequest("POST", "/api/keys/search", {
+        query,
+        secret: "gT7mA5zP2bW0kQeN81XrL9aFuCjYzTq47KvHdEp3MmNs"
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setSearchResults(data.results || []);
+      setIsSearchMode(true);
+      toast({
+        title: "Search Complete",
+        description: `Found ${data.results?.length || 0} key(s)`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Search Error",
+        description: error.message || "Failed to search keys",
+        variant: "destructive",
+      });
+    },
   });
 
   const copyToClipboard = async (text: string) => {
@@ -46,6 +81,21 @@ export default function Secret() {
       });
     }
   };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      searchMutation.mutate(searchQuery.trim());
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setSearchResults([]);
+    setIsSearchMode(false);
+  };
+
+  const displayKeys = isSearchMode ? searchResults : (Array.isArray(allKeys) ? allKeys : []);
 
   // Show blocked message for non-validation access
   if (!location.includes("check") && !location.includes("validate")) {
@@ -98,34 +148,71 @@ export default function Secret() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl mb-6">
             <i className="fas fa-database text-white text-2xl"></i>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">All Generated Keys</h2>
-          <p className="text-gray-400 mb-6">Complete database of generated keys</p>
+          <h2 className="text-3xl font-bold text-white mb-4">Key Database Search</h2>
+          <p className="text-gray-400 mb-6">Search and view generated keys (server-side protected)</p>
           
-          <Button
-            onClick={() => setShowKeys(!showKeys)}
-            className="bg-red-600 hover:bg-red-700 text-white"
-          >
-            {showKeys ? (
-              <>
-                <EyeOff className="h-4 w-4 mr-2" />
-                Hide Keys
-              </>
-            ) : (
-              <>
-                <Eye className="h-4 w-4 mr-2" />
-                Show Keys
-              </>
+          {/* Search Form */}
+          <form onSubmit={handleSearch} className="max-w-md mx-auto mb-6">
+            <div className="flex gap-2">
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by key or name..."
+                className="bg-slate-800 border-slate-600 text-white placeholder-gray-400"
+              />
+              <Button
+                type="submit"
+                disabled={searchMutation.isPending || !searchQuery.trim()}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {searchMutation.isPending ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                ) : (
+                  <Search className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </form>
+
+          <div className="flex gap-2 justify-center">
+            <Button
+              onClick={() => setShowKeys(!showKeys)}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {showKeys ? (
+                <>
+                  <EyeOff className="h-4 w-4 mr-2" />
+                  Hide Keys
+                </>
+              ) : (
+                <>
+                  <Eye className="h-4 w-4 mr-2" />
+                  Show Keys
+                </>
+              )}
+            </Button>
+            
+            {isSearchMode && (
+              <Button
+                onClick={clearSearch}
+                variant="outline"
+                className="border-gray-600 text-gray-300 hover:bg-slate-700"
+              >
+                Clear Search
+              </Button>
             )}
-          </Button>
+          </div>
         </div>
 
         {/* Keys Display */}
         <Card className="bg-slate-800 border-slate-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-white">Database Contents</h3>
+              <h3 className="text-xl font-semibold text-white">
+                {isSearchMode ? "Search Results" : "Database Contents"}
+              </h3>
               <span className="text-sm text-gray-400">
-                {Array.isArray(allKeys) ? allKeys.length : 0} keys found
+                {displayKeys.length} key{displayKeys.length === 1 ? '' : 's'} {isSearchMode ? 'found' : 'total'}
               </span>
             </div>
 
@@ -136,8 +223,8 @@ export default function Secret() {
               </div>
             ) : (
               <div className="space-y-4">
-                {Array.isArray(allKeys) && allKeys.length > 0 ? (
-                  allKeys.map((key: Key, index: number) => (
+                {displayKeys.length > 0 ? (
+                  displayKeys.map((key: Key, index: number) => (
                     <div
                       key={key.id}
                       className="bg-slate-700 rounded-lg p-4 border border-slate-600"

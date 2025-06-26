@@ -202,9 +202,46 @@ export class SQLiteStorage implements IStorage {
       this.db.run(
         'DELETE FROM keys WHERE expiresAt < ?',
         [now.toISOString()],
-        (err) => {
-          if (err) reject(err);
-          else resolve();
+        function(err) {
+          if (err) {
+            console.error('Error cleaning up expired keys:', err);
+            reject(err);
+          } else {
+            if (this.changes > 0) {
+              console.log(`Cleaned up ${this.changes} expired keys`);
+            }
+            resolve();
+          }
+        }
+      );
+    });
+  }
+
+  // Public method to manually trigger cleanup
+  async cleanupExpired(): Promise<void> {
+    return this.cleanupExpiredKeys();
+  }
+
+  async searchKeys(query: string): Promise<Key[]> {
+    // Clean up expired keys first
+    await this.cleanupExpiredKeys();
+    
+    return new Promise((resolve, reject) => {
+      const searchQuery = `%${query}%`;
+      this.db.all(
+        'SELECT * FROM keys WHERE (name LIKE ? OR key LIKE ?) AND expiresAt > ? AND used < maxUses ORDER BY timestamp DESC LIMIT 1',
+        [searchQuery, searchQuery, new Date().toISOString()],
+        (err, rows: any[]) => {
+          if (err) {
+            reject(err);
+          } else {
+            const keys = rows.map(row => ({
+              ...row,
+              timestamp: new Date(row.timestamp),
+              expiresAt: new Date(row.expiresAt)
+            }));
+            resolve(keys);
+          }
         }
       );
     });

@@ -28,6 +28,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Request body:", req.body);
       
+      // Clean up expired keys first
+      await storage.cleanupExpired();
+      
       const { name, type, length } = req.body;
       
       let generatedKey: string;
@@ -69,6 +72,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all keys
   app.get("/api/keys", async (req, res) => {
     try {
+      // Clean up expired keys first
+      await storage.cleanupExpired();
       const keys = await storage.getAllKeys();
       res.json(keys);
     } catch (error) {
@@ -275,6 +280,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { key } = req.params;
       
+      // Clean up expired keys first
+      await storage.cleanupExpired();
+      
       // Get all keys to find the matching one
       const fileData = await storage.getKeysFromFile();
       const foundKey = fileData.keys.find(k => k.key === key);
@@ -333,6 +341,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
         valid: false,
         message: "Server error",
         error: true
+      });
+    }
+  });
+
+  // Search keys endpoint (server-side protected)
+  app.post("/api/keys/search", async (req, res) => {
+    try {
+      const { query, secret } = req.body;
+      
+      // Server-side protection - require secret
+      if (secret !== "gT7mA5zP2bW0kQeN81XrL9aFuCjYzTq47KvHdEp3MmNs") {
+        return res.status(403).json({
+          error: "Access denied",
+          message: "Invalid secret"
+        });
+      }
+      
+      if (!query || query.trim().length === 0) {
+        return res.status(400).json({
+          error: "Query required",
+          message: "Search query is required"
+        });
+      }
+      
+      const results = await storage.searchKeys(query.trim());
+      res.json({
+        success: true,
+        results,
+        count: results.length
+      });
+    } catch (error) {
+      console.error('Error searching keys:', error);
+      res.status(500).json({
+        error: "Search failed",
+        message: "Failed to search keys"
+      });
+    }
+  });
+
+  // Cleanup expired keys endpoint
+  app.post("/api/keys/cleanup", async (req, res) => {
+    try {
+      await storage.cleanupExpired();
+      res.json({
+        success: true,
+        message: "Expired keys cleaned up"
+      });
+    } catch (error) {
+      console.error('Error cleaning up keys:', error);
+      res.status(500).json({
+        error: "Cleanup failed",
+        message: "Failed to cleanup expired keys"
       });
     }
   });

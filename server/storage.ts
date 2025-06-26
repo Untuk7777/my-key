@@ -11,6 +11,8 @@ export interface IStorage {
   saveKeysToFile(keys: Key[]): Promise<void>;
   markKeyAsUsed(keyId: number): Promise<void>;
   clearAllKeys(): Promise<void>;
+  cleanupExpired(): Promise<void>;
+  searchKeys(query: string): Promise<Key[]>;
 }
 
 export const storage = new SQLiteStorage();
