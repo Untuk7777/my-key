@@ -19,51 +19,16 @@ const keyGenerationLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Function to verify reCAPTCHA
-async function verifyRecaptcha(token: string): Promise<boolean> {
-  try {
-    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: `secret=6Ldj8G0rAAAAAEWOd28s4GN029jE8-F5UubBZyJB&response=${token}`
-    });
-    
-    const data = await response.json();
-    return data.success === true;
-  } catch (error) {
-    console.error('reCAPTCHA verification error:', error);
-    return false;
-  }
-}
+
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Generate a new key with reCAPTCHA verification and rate limiting
+  // Generate a new key with rate limiting
   app.post("/api/keys", keyGenerationLimiter, async (req, res) => {
     try {
       console.log("Request body:", req.body);
       
-      // Verify reCAPTCHA first
-      const { recaptchaToken, ...keyData } = req.body;
-      
-      if (!recaptchaToken) {
-        return res.status(400).json({ 
-          message: "reCAPTCHA verification required",
-          error: "RECAPTCHA_MISSING"
-        });
-      }
-      
-      const isRecaptchaValid = await verifyRecaptcha(recaptchaToken);
-      if (!isRecaptchaValid) {
-        return res.status(400).json({ 
-          message: "reCAPTCHA verification failed. Please try again.",
-          error: "RECAPTCHA_INVALID"
-        });
-      }
-      
-      const { name, type, length } = keyData;
+      const { name, type, length } = req.body;
       
       let generatedKey: string;
       

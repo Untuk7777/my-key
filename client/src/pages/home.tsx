@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,6 @@ import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import { Search } from "lucide-react";
 import type { Key } from "@shared/schema";
-import ReCAPTCHA from "react-google-recaptcha";
 
 // Helper function to mask keys for privacy
 const maskKey = (key: string): string => {
@@ -34,8 +33,7 @@ export default function Home() {
   const [keyType, setKeyType] = useState("uuid");
   const [keyLength, setKeyLength] = useState(32);
   const [currentKey, setCurrentKey] = useState<Key | null>(null);
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -44,14 +42,12 @@ export default function Home() {
   });
 
   const generateKeyMutation = useMutation({
-    mutationFn: async (keyData: { name: string; type: string; length: number; recaptchaToken: string }) => {
+    mutationFn: async (keyData: { name: string; type: string; length: number }) => {
       const response = await apiRequest("POST", "/api/keys", keyData);
       return response.json();
     },
     onSuccess: (newKey: Key) => {
       setCurrentKey(newKey);
-      setRecaptchaToken(null);
-      recaptchaRef.current?.reset();
       queryClient.invalidateQueries({ queryKey: ["/api/keys/file"] });
       toast({
         title: "Success!",
@@ -61,16 +57,12 @@ export default function Home() {
     onError: (error: any) => {
       let errorMessage = "Failed to generate key. Please try again.";
       
-      if (error.message?.includes("RECAPTCHA")) {
-        errorMessage = "Please complete the reCAPTCHA verification";
-      } else if (error.message?.includes("Too many")) {
+      if (error.message?.includes("Too many")) {
         errorMessage = "You can only generate 1 key every 3 hours. Please try again later.";
       } else if (error.message) {
         errorMessage = error.message;
       }
       
-      setRecaptchaToken(null);
-      recaptchaRef.current?.reset();
       toast({
         title: "Error",
         description: errorMessage,
@@ -82,25 +74,11 @@ export default function Home() {
   const handleGenerateKey = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!recaptchaToken) {
-      toast({
-        title: "reCAPTCHA Required",
-        description: "Please complete the reCAPTCHA verification first",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     generateKeyMutation.mutate({
       name: keyName || "Unnamed Key",
       type: "bash",
       length: 25, // Fixed length for bash format
-      recaptchaToken: recaptchaToken,
     });
-  };
-
-  const handleRecaptchaChange = (token: string | null) => {
-    setRecaptchaToken(token);
   };
 
   const copyToClipboard = async () => {
@@ -201,18 +179,9 @@ export default function Home() {
                   />
                 </div>
 
-                {/* reCAPTCHA */}
-                <div className="flex justify-center mb-6">
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    sitekey="6Ldj8G0rAAAAACRjs_f67E9Ycsy9f-iQZEB3WeA_"
-                    onChange={handleRecaptchaChange}
-                  />
-                </div>
-
                 <Button
                   type="submit"
-                  disabled={generateKeyMutation.isPending || !recaptchaToken}
+                  disabled={generateKeyMutation.isPending}
                   className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-4 px-6 rounded-lg hover:from-blue-600 hover:to-blue-700 focus:ring-4 focus:ring-blue-200 transform hover:scale-105 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {generateKeyMutation.isPending ? (
@@ -327,7 +296,7 @@ export default function Home() {
                   <span className="text-sm font-medium text-blue-700">Total Keys</span>
                 </div>
                 <p className="text-2xl font-bold text-blue-900 mt-1">
-                  {fileData?.metadata?.total_keys || 0}
+                  {(fileData as any)?.metadata?.total_keys || 0}
                 </p>
               </div>
               <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
@@ -336,8 +305,8 @@ export default function Home() {
                   <span className="text-sm font-medium text-emerald-700">Last Generated</span>
                 </div>
                 <p className="text-sm font-medium text-emerald-900 mt-1">
-                  {fileData?.metadata?.last_generated 
-                    ? new Date(fileData.metadata.last_generated).toLocaleString() 
+                  {(fileData as any)?.metadata?.last_generated 
+                    ? new Date((fileData as any).metadata.last_generated).toLocaleString() 
                     : "Never"}
                 </p>
               </div>
@@ -364,7 +333,8 @@ export default function Home() {
                   <code dangerouslySetInnerHTML={{
                     __html: (() => {
                       // Create a copy of fileData with masked keys
-                      const dataCopy = JSON.parse(JSON.stringify(fileData || { keys: [], metadata: { total_keys: 0, last_generated: null } }));
+                      const data = fileData || { keys: [], metadata: { total_keys: 0, last_generated: null } };
+                      const dataCopy = JSON.parse(JSON.stringify(data));
                       if (dataCopy.keys && Array.isArray(dataCopy.keys)) {
                         dataCopy.keys = dataCopy.keys.map((keyObj: any) => ({
                           ...keyObj,
