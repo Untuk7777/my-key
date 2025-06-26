@@ -6,14 +6,14 @@ import { z } from "zod";
 import rateLimit from "express-rate-limit";
 import { randomUUID } from 'crypto';
 
-// Rate limiter for key generation - 1 key per 3 hours
+// Rate limiter for key generation - 3 keys per 15 minutes
 const keyGenerationLimiter = rateLimit({
-  windowMs: 3 * 60 * 60 * 1000, // 3 hours
-  max: 1, // limit each IP to 1 request per windowMs
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 3, // limit each IP to 3 requests per windowMs
   message: {
-    error: "Too many key generation requests",
-    message: "You can only generate 1 key every 3 hours. Please try again later.",
-    retryAfter: 3 * 60 * 60 * 1000
+    error: "Hold on Cooldown..",
+    message: "You can only generate 3 keys every 15 minutes. Please try again later.",
+    retryAfter: 15 * 60 * 1000
   },
   standardHeaders: true,
   legacyHeaders: false,
