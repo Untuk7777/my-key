@@ -289,16 +289,7 @@ export default function Home() {
             </div>
 
             {/* Database Stats */}
-            <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <div className="flex items-center space-x-2">
-                  <i className="fas fa-counter text-blue-600"></i>
-                  <span className="text-sm font-medium text-blue-700">Total Keys</span>
-                </div>
-                <p className="text-2xl font-bold text-blue-900 mt-1">
-                  {(fileData as any)?.metadata?.total_keys || 0}
-                </p>
-              </div>
+            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
                 <div className="flex items-center space-x-2">
                   <i className="fas fa-clock text-emerald-600"></i>
