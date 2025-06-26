@@ -84,6 +84,7 @@ Changelog:
 - June 25, 2025. Replaced keys.json file storage with SQLite3 database
 - June 25, 2025. Added rate limiting (1 key per 3 hours)
 - June 26, 2025. Updated rate limiting to 3 keys per 15 minutes with "Hold on Cooldown.." message
+- June 26, 2025. Modified database to show only one key at a time (clears previous keys when generating new ones)
 
 ## User Preferences
 

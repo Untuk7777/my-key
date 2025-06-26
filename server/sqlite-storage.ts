@@ -79,7 +79,7 @@ export class SQLiteStorage implements IStorage {
 
   async createKey(insertKey: InsertKey): Promise<Key> {
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const expiresAt = insertKey.expiresAt || new Date(now.getTime() + 24 * 60 * 60 * 1000);
     
     return new Promise((resolve, reject) => {
       this.db.run(
@@ -184,6 +184,15 @@ export class SQLiteStorage implements IStorage {
           else resolve();
         }
       );
+    });
+  }
+
+  async clearAllKeys(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.db.run('DELETE FROM keys', (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
     });
   }
 

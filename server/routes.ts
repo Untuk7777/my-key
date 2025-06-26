@@ -30,6 +30,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const { name, type, length } = req.body;
       
+      // Clear all existing keys to maintain only one key in database
+      await storage.clearAllKeys();
+      
       let generatedKey: string;
       
       // Generate bash-style key: FREE-9f2d7c1a3e-bd4f7a29

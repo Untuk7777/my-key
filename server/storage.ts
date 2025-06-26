@@ -10,6 +10,7 @@ export interface IStorage {
   getKeysFromFile(): Promise<{keys: Key[], metadata: {total_keys: number, last_generated: string | null}}>;
   saveKeysToFile(keys: Key[]): Promise<void>;
   markKeyAsUsed(keyId: number): Promise<void>;
+  clearAllKeys(): Promise<void>;
 }
 
 export const storage = new SQLiteStorage();
